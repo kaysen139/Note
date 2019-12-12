@@ -7,6 +7,7 @@ use App\Models\Category;
 
 class CategoriesController extends ApiController
 {
+
     public function index()
     {
         $categories = Category::orderBy('created_at', 'desc')->paginate();
@@ -18,4 +19,5 @@ class CategoriesController extends ApiController
         $categories = Category::all();
         return CategoryResource::collection($categories);
     }
+
 }

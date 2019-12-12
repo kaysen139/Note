@@ -19,12 +19,12 @@ class ArticlesController extends Controller
 
     function __construct()
     {
-        $this->middleware('auth')->except(['index','show','archive']);
+        $this->middleware('auth')->except(['index', 'show', 'archive']);
     }
 
     public function index(Category $category, ArticleFilters $fitters)
     {
-        $articles = $this->getArticles($category,$fitters);
+        $articles = $this->getArticles($category, $fitters);
 
         // https://stackoverflow.com/questions/17159273/laravel-pagination-links-not-including-other-get-parameters
         $articles->appends(Input::except('page'));
@@ -32,56 +32,53 @@ class ArticlesController extends Controller
 
 //        return $articles;
 
-        return view('articles.index',compact('articles'));
+        return view('articles.index', compact('articles'));
     }
 
-    public function archive($year,$month){
-
-        $startDate = Carbon::create($year,$month)->startOfMonth();
+    public function archive($year, $month)
+    {
+        $startDate = Carbon::create($year, $month)->startOfMonth();
         $endDate = $startDate->copy()->addMonth();
         $articles = Article::query()
-            ->where('created_at','>=',$startDate)
-            ->where('created_at','<',$endDate)
-            ->orderBy('created_at','desc')
+            ->where('created_at', '>=', $startDate)
+            ->where('created_at', '<', $endDate)
+            ->orderBy('created_at', 'desc')
             ->paginate(10);
 
-        return view('articles.index',compact('articles'));
+        return view('articles.index', compact('articles'));
     }
 
     protected function getArticles(Category $category, ArticleFilters $fitters)
     {
         $article = Article::withCount('comments')->latest()->filter($fitters);
 
-        if ($category->exists){
-            $article->where('category_id',$category->id);
+        if ($category->exists) {
+            $article->where('category_id', $category->id);
         }
         return $article->paginate(10);
-
     }
 
-    public function show($category,Article $article,Request $request)
+    public function show($category, Article $article, Request $request)
     {
-
         // URL 矫正
-        if ( ! empty($article->slug) && $article->slug != $request->slug) {
+        if (!empty($article->slug) && $article->slug != $request->slug) {
             return redirect($article->path(), 301);
         }
         $article->load(['comments']);
 //        return $article;
 
-        if (auth()->check()){
+        if (auth()->check()) {
             auth()->user()->readArticle($article);
         }
 
-        return view('articles.show',compact('article'));
-
+        return view('articles.show', compact('article'));
     }
 
 
     /**
      *
-     * @var \App\Models\User $user
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @var \App\Models\User $user
      */
     public function create()
     {
@@ -91,16 +88,14 @@ class ArticlesController extends Controller
             'relation_type' => Article::class
         ]);
 
-
-        return redirect()->route('drafts.edit',$draft->ref);
+        return redirect()->route('drafts.edit', $draft->ref);
     }
-
 
 
     public function edit(Article $article)
     {
-        $draft =$article->currentDraft;
-        if (empty($draft)){
+        $draft = $article->currentDraft;
+        if (empty($draft)) {
             $draft = Auth::user()->drafts()->create([
                 'title' => $article->title,
                 'body' => json_decode($article->body)->raw,
@@ -108,25 +103,21 @@ class ArticlesController extends Controller
                 'relation_id' => $article->id
             ]);
         }
-        return redirect()->route('drafts.edit',$draft->ref);
-
+        return redirect()->route('drafts.edit', $draft->ref);
     }
 
 
-    public function  destroy(Article $article)
+    public function destroy(Article $article)
     {
-        $this->authorize('update',$article);
+        $this->authorize('update', $article);
 
         $article->delete();
 
         $article->comments->each->delete();
 
-        alert('文章删除成功','success');
+        alert('文章删除成功', 'success');
 
         return redirect('/');
-
     }
-
-
 
 }

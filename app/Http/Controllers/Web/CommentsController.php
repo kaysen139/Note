@@ -10,9 +10,10 @@ use Illuminate\Support\Facades\Auth;
 
 class CommentsController extends Controller
 {
-    public function store(Article $article,Request $request)
+
+    public function store(Article $article, Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'body' => 'required'
         ]);
 
@@ -22,12 +23,9 @@ class CommentsController extends Controller
             'user_id' => Auth::user()->id
         ]);
 
-        alert('评论添加成功','success');
+        alert('评论添加成功', 'success');
 
         return back();
-
-
-
-
     }
+
 }

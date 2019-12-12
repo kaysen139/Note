@@ -16,8 +16,7 @@ class FilesController extends ApiController
 
     public function ImageUpload(Request $request)
     {
-
-        if (!$request->hasFile('file')){
+        if (!$request->hasFile('file')) {
             return $this->failed('上传文件不能为空');
         }
 
@@ -28,7 +27,8 @@ class FilesController extends ApiController
         $result = $imageHander->uploadImage($file);
 
         return $this->success([
-            'image' => '/'.$result['filename']
+            'image' => '/' . $result['filename']
         ]);
     }
+
 }

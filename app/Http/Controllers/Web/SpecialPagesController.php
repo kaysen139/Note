@@ -11,52 +11,50 @@ class SpecialPagesController extends Controller
 
     function __construct()
     {
-        $this->middleware(['auth','admin'])->except(['show']);
+        $this->middleware(['auth', 'admin'])->except(['show']);
     }
 
 
-    public function index(){
-
-
+    public function index()
+    {
 
     }
 
-    public function edit(SpecialPage $page){
+    public function edit(SpecialPage $page)
+    {
 
-        return view('special_pages.edit',compact('page'));
+        return view('special_pages.edit', compact('page'));
     }
 
-    public function show($name){
+    public function show($name)
+    {
 
-        $page = SpecialPage::where('route',$name)->firstOrFail();
+        $page = SpecialPage::where('route', $name)->firstOrFail();
 
-        return view('special_pages.show',compact('page'));
+        return view('special_pages.show', compact('page'));
     }
 
-    public function create(){
+    public function create()
+    {
 
         return view('special_pages.create');
     }
 
 
-    public function store(){
-
-
+    public function store()
+    {
 
     }
 
-    public function destroy(SpecialPage $page){
-
-
+    public function destroy(SpecialPage $page)
+    {
         $page->delete();
 
         $page->comments->each->delete();
 
-        alert('页面删除成功','success');
+        alert('页面删除成功', 'success');
 
         return redirect('/');
     }
-
-
 
 }

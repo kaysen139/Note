@@ -15,28 +15,30 @@ class DraftsController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(){
-
+    public function index()
+    {
         $user = Auth::user();
 
         $drafts = $user->drafts()->whereNull('parent_id')->latest()->paginate(10);
 
-        return view('drafts.index',compact('user','drafts'));
+        return view('drafts.index', compact('user', 'drafts'));
     }
 
-    public function show($draft){
-
+    public function show($draft)
+    {
         return view('drafts.show');
     }
 
-    public function edit(Draft $draft){
-        return view('drafts.edit',compact('draft'));
-
+    public function edit(Draft $draft)
+    {
+        return view('drafts.edit', compact('draft'));
     }
 
-    public function destroy(Draft $draft){
+    public function destroy(Draft $draft)
+    {
         $draft->delete();
         flash('删除成功');
         return back();
     }
+
 }

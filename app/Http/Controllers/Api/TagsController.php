@@ -10,18 +10,16 @@ use App\Http\Resources\TagResource as TagCollection;
 class TagsController extends Controller
 {
 
-    public function index(){
-
+    public function index()
+    {
         $q = Input::get('q');
         $limit = Input::get('limit') ?: 10;
 
-        $tags = Tag::where('name','like','%'.$q.'%')
-            ->orWhere('slug','like','%'.$q.'%')
+        $tags = Tag::where('name', 'like', '%' . $q . '%')
+            ->orWhere('slug', 'like', '%' . $q . '%')
             ->paginate($limit);
 
         return TagCollection::collection($tags);
-
     }
-
 
 }

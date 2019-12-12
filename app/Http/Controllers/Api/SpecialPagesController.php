@@ -8,26 +8,27 @@ use Illuminate\Http\Request;
 
 class SpecialPagesController extends ApiController
 {
+
     public function __construct()
     {
-        $this->middleware(['auth:api','admin'],['except' => ['show','index']]);
-
+        $this->middleware(['auth:api', 'admin'], ['except' => ['show', 'index']]);
     }
 
-    public function show(SpecialPage $page){
-
+    public function show(SpecialPage $page)
+    {
         return new SpecialPageResource($page);
     }
 
-    public function store(Request $request){
-        $this->validate($request,[
+    public function store(Request $request)
+    {
+        $this->validate($request, [
             'isShowNav' => 'required',
             'title' => 'required',
             'route' => 'required',
             'body' => 'required'
         ]);
 
-        $page =  SpecialPage::create([
+        $page = SpecialPage::create([
             'show_nav' => $request->isShowNav,
             'title' => $request->title,
             'body' => clean($request->body),
@@ -36,9 +37,9 @@ class SpecialPagesController extends ApiController
         return new SpecialPageResource($page);
     }
 
-    public function update(Request $request,SpecialPage $page){
-
-        $this->validate($request,[
+    public function update(Request $request, SpecialPage $page)
+    {
+        $this->validate($request, [
             'isShowNav' => 'required',
             'title' => 'required',
             'route' => 'required',
@@ -53,8 +54,6 @@ class SpecialPagesController extends ApiController
         ]);
 
         return new SpecialPageResource($page);
-
     }
-
 
 }

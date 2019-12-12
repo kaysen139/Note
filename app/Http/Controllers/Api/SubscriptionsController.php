@@ -15,11 +15,11 @@ class SubscriptionsController extends ApiController
     }
 
 
-    public function store(SubscribeRequest $request){
-
-        try{
+    public function store(SubscribeRequest $request)
+    {
+        try {
             $request->subscribe();
-        }catch(SubscribeException $e){
+        } catch (SubscribeException $e) {
             return $e->response();
         }
 
@@ -29,13 +29,14 @@ class SubscriptionsController extends ApiController
     }
 
 
-    public function destroy(SubscribeRequest $request){
-
-        try{
+    public function destroy(SubscribeRequest $request)
+    {
+        try {
             $request->unsubscribe();
-        }catch(SubscribeException $e){
+        } catch (SubscribeException $e) {
             return $e->response();
         }
         return $this->message('取消点赞成功');
     }
+
 }

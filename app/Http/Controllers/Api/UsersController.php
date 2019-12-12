@@ -8,14 +8,15 @@ use Illuminate\Support\Facades\Auth;
 
 class UsersController extends ApiController
 {
+
     public function __construct()
     {
         $this->middleware('auth:api');
     }
 
-    public function uploadAvatar(Request $request){
-
-        $this->validate($request,[
+    public function uploadAvatar(Request $request)
+    {
+        $this->validate($request, [
             'img' => 'required|image'
 
         ]);
@@ -26,9 +27,9 @@ class UsersController extends ApiController
 
 
         $avatar = $request->file('img');
-        $result = $imageHander->uploadAvatar($avatar,$user);
+        $result = $imageHander->uploadAvatar($avatar, $user);
 
-        $avatarPath = '/'.$imageHander->avatarPath().'/'.$result['filename'];
+        $avatarPath = '/' . $imageHander->avatarPath() . '/' . $result['filename'];
 
         $user->avatar = $avatarPath;
         $user->save();
@@ -36,6 +37,6 @@ class UsersController extends ApiController
         return $this->success([
             'avatar' => $avatarPath
         ]);
-
     }
+
 }

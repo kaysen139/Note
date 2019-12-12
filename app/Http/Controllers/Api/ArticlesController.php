@@ -17,31 +17,29 @@ class ArticlesController extends ApiController
 
     public function __construct()
     {
-        $this->middleware('auth:api',['except' => ['show','index','archiveDates']]);
-
+        $this->middleware('auth', ['except' => ['show', 'index', 'archiveDates']]);
     }
 
-    public function index(){
-
+    public function index()
+    {
         $articles = Article::orderBy('created_at', 'desc')->paginate(20);
         return ArticleResource::collection($articles);
     }
 
 
     // get article archive date time and publish count
-    public function archiveDates(){
-
+    public function archiveDates()
+    {
         $archive = Article::query()
             ->selectRaw('year(created_at)  year')
             ->selectRaw('month(created_at) month')
             ->selectRaw('count(*) published')
-            ->groupBy('year','month')
+            ->groupBy('year', 'month')
             ->orderByRaw('min(created_at) desc')
             ->get();
 
         return ArchiveResource::collection($archive);
     }
-
 
 
     public function show(Article $article)
@@ -50,11 +48,9 @@ class ArticlesController extends ApiController
     }
 
 
-
-
     public function store(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'category_id' => 'required|exists:categories,id',
             'draft_ref' => 'required',
             'is_original' => 'required',
@@ -65,7 +61,7 @@ class ArticlesController extends ApiController
         $draft = Draft::getWithRef($ref);
         $draft = $draft->getLastUpdate();
 
-        $tags = json_decode($request->tags,true);
+        $tags = json_decode($request->tags, true);
         $user = Auth::user();
 
         $article = Article::query()->create([
@@ -78,34 +74,33 @@ class ArticlesController extends ApiController
 
         ]);
 
-        dispatch(new TranslateSlug($article,'title'));
+        dispatch(new TranslateSlug($article, 'title'));
 
-        Draft::relationIdWithRef($ref,$article->id);
+        Draft::relationIdWithRef($ref, $article->id);
 
         $article->subscribe();
 
         $article = $article->syncTags($tags)->load('category');
         return new ArticleResource($article);
-
     }
 
 
-    public function update(Article $article,Request $request)
+    public function update(Article $article, Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'category_id' => 'required|exists:categories,id',
             'draft_ref' => 'required',
             'is_original' => 'required',
             'tags' => ''
         ]);
 
-        $tags = json_decode($request->tags,true);
+        $tags = json_decode($request->tags, true);
 
         $ref = $request->get('draft_ref');
         $draft = Draft::getWithRef($ref);
         $draft = $draft->getLastUpdate();
 
-        $this->authorize('update',$article);
+        $this->authorize('update', $article);
         $article->update([
             'title' => $draft->title,
             'content' => $draft->body,
@@ -119,11 +114,10 @@ class ArticlesController extends ApiController
 
 
     // 删除文章
-    public function destroy(Article $article){
-
-        $this->authorize('update',$article);
+    public function destroy(Article $article)
+    {
+        $this->authorize('update', $article);
         $article->delete();
         return $this->message('删除成功');
-
     }
 }

@@ -14,36 +14,36 @@ use App\Http\Resources\CommentResource;
 class CommentsController extends ApiController
 {
 
-     public function __construct()
+    public function __construct()
     {
-        $this->middleware('auth:api')->except(['index','pageComments','discussionComments','bestAnswer']);
-
+        $this->middleware('auth:api')->except(['index', 'pageComments', 'discussionComments', 'bestAnswer']);
     }
 
-    public function index($category,Article $article)
+    public function index($category, Article $article)
     {
         $comments = $article->comments()->paginate(20);
 
         return CommentResource::collection($comments);
     }
 
-    public function discussionComments(Discussion $discussion){
+    public function discussionComments(Discussion $discussion)
+    {
         $comments = $discussion->comments()->paginate(20);
         return CommentResource::collection($comments);
-
     }
 
-    public function bestAnswer(Discussion $discussion){
-
+    public function bestAnswer(Discussion $discussion)
+    {
         $bestAnswer = $discussion->bestAnswer;
-        if (empty($bestAnswer)){
+        if (empty($bestAnswer)) {
             return $this->message('没有最佳答案');
         }
         return new CommentResource($bestAnswer);
     }
 
-    public function storeDiscussionComments(Discussion $discussion,Request $request){
-        $this->validate($request,[
+    public function storeDiscussionComments(Discussion $discussion, Request $request)
+    {
+        $this->validate($request, [
             'body' => 'required'
         ]);
 
@@ -59,37 +59,36 @@ class CommentsController extends ApiController
 
     }
 
-    public function pageComments($name){
-
-        $page = SpecialPage::where('route',$name)->firstOrFail();
+    public function pageComments($name)
+    {
+        $page = SpecialPage::where('route', $name)->firstOrFail();
 
         $comments = $page->comments()->paginate(20);
         return CommentResource::collection($comments);
-
     }
 
-    public function storePageComment(Request $request,$name){
-        $this->validate($request,[
+    public function storePageComment(Request $request, $name)
+    {
+        $this->validate($request, [
             'body' => 'required'
         ]);
 
         $mention = new Mention();
         $parsed_body = $mention->parse($request->body);
 
-        $page = $page = SpecialPage::where('route',$name)->firstOrFail();
+        $page = $page = SpecialPage::where('route', $name)->firstOrFail();
 
         $comment = $page->comments()->create([
             'content' => $parsed_body,
             'user_id' => Auth::user()->id
         ]);
         return new CommentResource($comment);
-
     }
 
 
-    public function store($catrgory_id,Article $article,Request $request)
+    public function store($catrgory_id, Article $article, Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'body' => 'required'
         ]);
 
@@ -100,7 +99,7 @@ class CommentsController extends ApiController
             'user_id' => Auth::user()->id
         ]);
 
-        $article->subscriptions->filter(function ($subscribe) use ($comment){
+        $article->subscriptions->filter(function ($subscribe) use ($comment) {
             return $subscribe->user->id != $comment->user->id;
         })->each->notify($comment);
 
@@ -108,13 +107,14 @@ class CommentsController extends ApiController
         return new CommentResource($comment);
     }
 
-    public function destroy(Comment $comment){
+    public function destroy(Comment $comment)
+    {
 
-         $this->authorize('update',$comment);
+        $this->authorize('update', $comment);
 
-         $comment->delete();
+        $comment->delete();
 
-         return $this->message('删除成功');
-
+        return $this->message('删除成功');
     }
+
 }

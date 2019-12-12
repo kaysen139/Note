@@ -15,22 +15,22 @@ class NotificationsController extends Controller
         $this->middleware('auth');
     }
 
-    public function index(){
-
+    public function index()
+    {
         $limit = Input::get('limit') ?: 30;
 
         $type = Input::get('type');
         $notifications = [];
         $user = Auth::user();
-        if ($type == 'unread'){
+        if ($type == 'unread') {
             $notifications = $user->unreadNotifications()->paginate($limit);
             $notifications->markAsRead();
-        }else{
+        } else {
             $notifications = $user->notifications()->paginate($limit);
         }
 
         $notifications->appends(Input::except('page'));
 
-        return view('notifications.index',compact('notifications'));
+        return view('notifications.index', compact('notifications'));
     }
 }

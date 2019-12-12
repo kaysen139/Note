@@ -14,9 +14,10 @@ use Illuminate\Support\Facades\Input;
 
 class DiscussionsController extends Controller
 {
+
     function __construct()
     {
-        $this->middleware('auth')->except(['index','show']);
+        $this->middleware('auth')->except(['index', 'show']);
     }
 
     public function index(DiscussionFilters $fitters)
@@ -27,29 +28,29 @@ class DiscussionsController extends Controller
         $discussions->appends(Input::except('page'));
 //        return $discussions;
 
-        return view('discussions.index',compact('discussions'));
+        return view('discussions.index', compact('discussions'));
     }
 
-    public function show(Discussion $discussion,Request $request)
+    public function show(Discussion $discussion, Request $request)
     {
-        if ( ! empty($discussion->slug) && $discussion->slug != $request->slug) {
+        if (!empty($discussion->slug) && $discussion->slug != $request->slug) {
             return redirect($discussion->path(), 301);
         }
 
         $discussion->load(['comments']);
 
-        if (auth()->check()){
+        if (auth()->check()) {
             auth()->user()->readDiscussion($discussion);
         }
 
-        return view('discussions.show',compact('discussion','bestAnswer'));
+        return view('discussions.show', compact('discussion', 'bestAnswer'));
 
     }
 
     /**
      *
-     * @var \App\Models\User $user
      * @return \Illuminate\Contracts\View\Factory|\Illuminate\View\View
+     * @var \App\Models\User $user
      */
     public function create()
     {
@@ -59,15 +60,14 @@ class DiscussionsController extends Controller
             'relation_type' => Discussion::class
         ]);
 
-        return redirect()->route('drafts.edit',$draft->ref);
+        return redirect()->route('drafts.edit', $draft->ref);
     }
-
 
 
     public function edit(Discussion $discussion)
     {
         $draft = $discussion->currentDraft;
-        if (empty($draft)){
+        if (empty($draft)) {
             $draft = Auth::user()->drafts()->create([
                 'title' => $discussion->title,
                 'body' => json_decode($discussion->body)->raw,
@@ -75,7 +75,7 @@ class DiscussionsController extends Controller
                 'relation_id' => $discussion->id
             ]);
         }
-        return redirect()->route('drafts.edit',$draft->ref);
+        return redirect()->route('drafts.edit', $draft->ref);
 
     }
 
@@ -85,6 +85,6 @@ class DiscussionsController extends Controller
         $discussions = Discussion::withCount('comments')->latest()->filter($fitters);
 
         return $discussions->paginate(10);
-
     }
+
 }

@@ -12,14 +12,13 @@ class CategoriesController extends Controller
     public function index()
     {
         $categories = Category::withCount('articles')
-            ->orderBy('articles_count','desc')
+            ->orderBy('articles_count', 'desc')
             ->limit(10)
             ->get();
 
-
-
         return $categories;
     }
+
     public function create()
     {
         return view('categories.create');
@@ -27,14 +26,14 @@ class CategoriesController extends Controller
 
     public function store(Request $request)
     {
-        $this->validate($request,[
+        $this->validate($request, [
             'name' => 'required|unique:categories',
             'slug' => 'required|unique:categories',
         ]);
 
-        Category::create($request->only('name','slug'));
+        Category::create($request->only('name', 'slug'));
 
-        alert('分类添加成功','success');
+        alert('分类添加成功', 'success');
         return back();
 
     }
