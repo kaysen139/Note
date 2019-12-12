@@ -27,9 +27,10 @@ class Article extends Model
         SlugTransable,
         ContentSetable,
         SoftDeletes;
+
     protected $guarded = [];
 
-    protected $with = ['category','user','tags'];
+    protected $with = ['category', 'user', 'tags'];
 
     protected $appends = [
         'isSubscribed',
@@ -38,12 +39,10 @@ class Article extends Model
         'lastComment'
     ];
 
-
     public function user()
     {
         return $this->belongsTo(User::class);
     }
-
 
     public function category()
     {
@@ -52,28 +51,27 @@ class Article extends Model
 
     public function tags()
     {
-        return $this->morphToMany(Tag::class,'taggable');
+        return $this->morphToMany(Tag::class, 'taggable');
     }
-
 
     public function drafts()
     {
-        return $this->morphMany(Draft::class,'relation');
+        return $this->morphMany(Draft::class, 'relation');
     }
 
-    public function currentDraft(){
-        return $this->belongsTo(Draft::class,'draft_id','id');
+    public function currentDraft()
+    {
+        return $this->belongsTo(Draft::class, 'draft_id', 'id');
     }
-
 
     public function replies()
     {
-        return $this->hasMany(Reply::class,'');
+        return $this->hasMany(Reply::class, '');
     }
 
     public function comments()
     {
-        return $this->morphMany(Comment::class,'commentable');
+        return $this->morphMany(Comment::class, 'commentable');
     }
 
     public function scopeFilter($query, ArticleFilters $filters)
@@ -81,17 +79,18 @@ class Article extends Model
         return $filters->apply($query);
     }
 
-    public function getlastCommentAttribute(){
-
+    public function getlastCommentAttribute()
+    {
         $lastComment = $this->comments()->latest()->first();
         return $lastComment;
     }
 
-    public function syncTags($tags){
-        $tags = collect($tags)->map(function ($tag){
+    public function syncTags($tags)
+    {
+        $tags = collect($tags)->map(function ($tag) {
 
-            $tag = Tag::where('id',$tag['id'])
-                ->orWhere('name',$tag['name'])
+            $tag = Tag::where('id', $tag['id'])
+                ->orWhere('name', $tag['name'])
                 ->firstOrCreate([
                     'name' => $tag['name']
                 ]);
@@ -99,64 +98,56 @@ class Article extends Model
         });
         $this->tags()->sync($tags);
         return $this;
-
     }
 
-
-    public function getBriefAttribute(){
-
+    public function getBriefAttribute()
+    {
         $body = $this->body;
-        $html = json_decode($body,true)['html'];
+        $html = json_decode($body, true)['html'];
 
         $text = strip_tags($html);
 
-        return mb_substr($text,0,200);
-
+        return mb_substr($text, 0, 200);
     }
 
     public function path($params = [])
     {
-        return route('articles.show', array_merge([$this->category->slug,$this->id, $this->slug], $params));
+        return route('articles.show', array_merge([$this->category->slug, $this->id, $this->slug], $params));
     }
-
 
     protected static function boot()
     {
         parent::boot();
 
         static::addGlobalScope(new ArticleFitterScope);
-
     }
 
-    public function notify(){
-
+    public function notify()
+    {
         $user = $this->user;
-        if (Auth::user()->id == $user->id){
+        if (Auth::user()->id == $user->id) {
             return;
         }
 
         $user->notify(new ArticleWasSubscribed($this));
     }
 
-
-    public function hasUpdatesFor($user){
+    public function hasUpdatesFor($user)
+    {
         if (empty($user)) return true;
 
         $key = $user->visitedArticleCacheKey($this);
         return $this->updated_at > cache($key);
-
     }
 
-    public function notifyFavorited(){
-
+    public function notifyFavorited()
+    {
         $user = $this->user;
-        if (Auth::user()->id == $user->id){
+        if (Auth::user()->id == $user->id) {
             return;
         }
 
         $user->notify(new ArticleWasFavorited($this));
-
     }
-
 
 }

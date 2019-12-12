@@ -22,16 +22,14 @@ class Category extends Model
         return 'slug';
     }
 
-    public function path(){
-
-        return '/articles/'.$this->slug;
+    public function path()
+    {
+        return '/articles/' . $this->slug;
     }
 
     protected static function boot()
     {
         parent::boot();
-
     }
-
 
 }

@@ -13,7 +13,7 @@ use Laravel\Passport\HasApiTokens;
 
 class User extends Authenticatable
 {
-    use HasApiTokens,Notifiable;
+    use HasApiTokens, Notifiable;
 
     /**
      * The attributes that are mass assignable.
@@ -46,46 +46,42 @@ class User extends Authenticatable
         return $this->hasMany(Article::class);
     }
 
-    public function drafts(){
+    public function drafts()
+    {
         return $this->hasMany(Draft::class);
     }
-
-
 
     public function sendVerifyEmail()
     {
         $this->notify(new SendActivatedEmail($this));
     }
 
-    function  sendPasswordResetNotification($token)
+    function sendPasswordResetNotification($token)
     {
         $this->notify(new ResetPassword($token));
     }
 
-
     public function getAvatarAttribute($value)
     {
-        if (!$value)
-        {
+        if (!$value) {
             $idention = new Identicon();
-            $imageDataUrl = $idention->getImageDataUri( md5($this->email),400);
+            $imageDataUrl = $idention->getImageDataUri(md5($this->email), 400);
             return $imageDataUrl;
         }
         return $value;
     }
 
-    public function readArticle($article){
-
+    public function readArticle($article)
+    {
         $article->increment('views_count');
         cache()->forever(
             $this->visitedArticleCacheKey($article),
             Carbon::now()
         );
-
     }
 
-    public function readDiscussion($discussion){
-
+    public function readDiscussion($discussion)
+    {
         $discussion->increment('views_count');
         cache()->forever(
             $this->visitedDiscussionCacheKey($discussion),
@@ -94,32 +90,27 @@ class User extends Authenticatable
 
     }
 
-    public function visitedArticleCacheKey($article){
-
-        return sprintf("article.users.%s.visits.%s",$this->id,$article->id);
+    public function visitedArticleCacheKey($article)
+    {
+        return sprintf("article.users.%s.visits.%s", $this->id, $article->id);
     }
 
-    public function visitedDiscussionCacheKey($discussion){
-        return sprintf("discussion.users.%s.visits.%s",$this->id,$discussion->id);
+    public function visitedDiscussionCacheKey($discussion)
+    {
+        return sprintf("discussion.users.%s.visits.%s", $this->id, $discussion->id);
     }
-
-
-
 
     public static function boot()
     {
         parent::boot();
 
-        static::creating(function ($user){
+        static::creating(function ($user) {
             $user->activation_token = str_random(30);
         });
 
-
-        static::deleting(function ($user){
+        static::deleting(function ($user) {
             $user->articles->each->forceDelete();
         });
-
     }
-
 
 }

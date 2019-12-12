@@ -10,18 +10,20 @@ class Subscription extends Model
 {
     protected $guarded = [];
 
-    public function user(){
-
+    public function user()
+    {
         return $this->belongsTo(User::class);
     }
 
-    public function notify($comment){
+    public function notify($comment)
+    {
         $this->user->notify(new ArticleWasUpdated($comment));
     }
 
 
-    public function notifyUpdateBestAnswer($discussion,$user){
-        $this->user->notify(new AnswerWasUpdateBest($discussion,$user));
+    public function notifyUpdateBestAnswer($discussion, $user)
+    {
+        $this->user->notify(new AnswerWasUpdateBest($discussion, $user));
     }
 
 

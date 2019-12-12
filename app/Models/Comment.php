@@ -13,10 +13,9 @@ use Illuminate\Support\Facades\Auth;
 class Comment extends Model
 {
 
-    use Favoritable,RecordsActivity,SoftDeletes;
+    use Favoritable, RecordsActivity, SoftDeletes;
 
     protected $guarded = [];
-
 
     protected $with = ['user'];
 
@@ -24,8 +23,6 @@ class Comment extends Model
     {
         return $this->belongsTo(User::class);
     }
-
-
 
     public function commentable()
     {
@@ -35,15 +32,15 @@ class Comment extends Model
     public function setContentAttribute($value)
     {
         $data = [
-            'raw'  => $value,
+            'raw' => $value,
             'html' => (new Markdowner())->convertMarkdownToHtml($value)
         ];
 
         $this->body = json_encode($data);
     }
 
-    public function getContentHtmlAttribute(){
-
+    public function getContentHtmlAttribute()
+    {
 
     }
 
@@ -52,29 +49,25 @@ class Comment extends Model
         return $this->commentable->path() . "#comment-{$this->id}";
     }
 
-    public function notifyFavorited(){
-
+    public function notifyFavorited()
+    {
         $user = $this->user;
-        if (Auth::user()->id == $user->id){
+        if (Auth::user()->id == $user->id) {
             return;
         }
 
         $user->notify(new CommentWasFavorited($this));
-
     }
 
-    public function notifyBestAnswer(){
-
+    public function notifyBestAnswer()
+    {
         $user = Auth::user();
 
         $discussion = $this->commentable;
 
-        $subscriptions = $discussion->subscriptions()->where('user_id','!=',$user->id)->get();
+        $subscriptions = $discussion->subscriptions()->where('user_id', '!=', $user->id)->get();
 
-        $subscriptions->each->notifyUpdateBestAnswer($this,$user);
-
+        $subscriptions->each->notifyUpdateBestAnswer($this, $user);
     }
-
-
 
 }

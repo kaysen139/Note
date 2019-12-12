@@ -7,6 +7,7 @@ use App\Models\User;
 
 class ArticleFilters extends Filters
 {
+
     protected $filters = [
         'by',
         'popular',
@@ -17,9 +18,9 @@ class ArticleFilters extends Filters
 
     protected function by($username)
     {
-        $user = User::where('name',$username)->firstOrFail();
+        $user = User::where('name', $username)->firstOrFail();
 
-        return $this->builder->where('user_id',$user->id);
+        return $this->builder->where('user_id', $user->id);
     }
 
     protected function popular()
@@ -28,24 +29,25 @@ class ArticleFilters extends Filters
 
         return $this->builder
             ->withCount('comments')
-            ->orderBy('comments_count','desc');
+            ->orderBy('comments_count', 'desc');
     }
 
-    protected function uncommented(){
+    protected function uncommented()
+    {
         $this->builder->getQuery()->orders = [];
         return $this->builder
-            ->has('comments','=',0);
+            ->has('comments', '=', 0);
     }
 
-    public function tag($name){
-
-        return $this->builder->whereHas('tags',function ($query) use ($name){
-            $query->where('slug',$name)->orWhere('name',$name);
+    public function tag($name)
+    {
+        return $this->builder->whereHas('tags', function ($query) use ($name) {
+            $query->where('slug', $name)->orWhere('name', $name);
         });
     }
 
-    public function archive($date){
-
+    public function archive($date)
+    {
         dd($date);
     }
 
