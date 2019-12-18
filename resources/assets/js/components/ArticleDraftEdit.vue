@@ -214,14 +214,11 @@
                     return;
                 }
 
-                var formData = new FormData(event.target);
+                var formData = new FormData();
                 formData.append('draft_ref', this.draftRef)
                 formData.append('category_id', this.category.id)
                 formData.append('is_original', this.isOriginal ? 1 : 0)
                 formData.append('tags', JSON.stringify(this.selectedTags));
-
-                console.log(formData)
-
 
                 axios.post('/api/v1/articles', formData).then((response) => {
 
@@ -253,7 +250,7 @@
                     return;
                 }
 
-                var formData = new FormData(event.target);
+                var formData = new FormData();
                 formData.append('draft_ref', this.draftRef)
                 formData.append('category_id', this.category.id)
                 formData.append('is_original', this.isOriginal ? 1 : 0)
@@ -275,7 +272,6 @@
                     console.log(article)
 
                     var path = 'articles' + '/' + article.category.slug + '/' + article.id;
-
 
                     window.location.href = '/' + path;
                     console.log(path);
