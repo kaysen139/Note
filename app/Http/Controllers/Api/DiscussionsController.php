@@ -16,7 +16,7 @@ class DiscussionsController extends ApiController
 
     public function __construct()
     {
-        $this->middleware('auth:api', ['except' => ['show', 'index']]);
+        $this->middleware('auth', ['except' => ['show', 'index']]);
     }
 
     public function store(Request $request)

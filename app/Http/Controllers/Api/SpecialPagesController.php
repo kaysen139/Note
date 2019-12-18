@@ -11,7 +11,7 @@ class SpecialPagesController extends ApiController
 
     public function __construct()
     {
-        $this->middleware(['auth:api', 'admin'], ['except' => ['show', 'index']]);
+        $this->middleware(['auth', 'admin'], ['except' => ['show', 'index']]);
     }
 
     public function show(SpecialPage $page)

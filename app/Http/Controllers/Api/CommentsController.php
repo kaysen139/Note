@@ -16,7 +16,7 @@ class CommentsController extends ApiController
 
     public function __construct()
     {
-        $this->middleware('auth:api')->except(['index', 'pageComments', 'discussionComments', 'bestAnswer']);
+        $this->middleware('auth')->except(['index', 'pageComments', 'discussionComments', 'bestAnswer']);
     }
 
     public function index($category, Article $article)

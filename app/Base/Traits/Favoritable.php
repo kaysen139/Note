@@ -58,7 +58,7 @@ trait Favoritable
      */
     public function isFavorited()
     {
-        $user = request()->user('api');
+        $user = request()->user('web');
         $userId = $user ? $user->id : auth()->id();
 
         return ! ! $this->favorites->where('user_id', $userId)->count();

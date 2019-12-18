@@ -12,7 +12,7 @@ class FavoriteController extends ApiController
 
     public function __construct()
     {
-        $this->middleware('auth:api')->except('index');
+        $this->middleware('auth')->except('index');
     }
 
     public function index($type, $type_id, FavoriteRequest $request)

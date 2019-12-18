@@ -17,7 +17,7 @@
     {{--</nav>--}}
 
     <article-view inline-template :initial-comments-count="0" :article-id="{{ $article->id }}">
-        
+
         <div class="columns article-page">
 
             <div class="column is-9">
@@ -86,7 +86,7 @@
                                 >
 
                                 </favorite-subject>
-                                
+
 
                             </div>
                             @if(count($article->tags) > 0)
@@ -152,7 +152,7 @@
                 </div>
             </div>
         </div>
-        
+
     </article-view>
 
 
