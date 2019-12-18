@@ -22,9 +22,9 @@ class SessionsController extends Controller
         ];
 
         if (Auth::attempt($credentials, true)) {
+            // 不校验邮箱
+            return redirect()->intended(route("users.show", [Auth::user()]));
             if (Auth::user()->activated) {
-//                return back();
-
 //                flash('尊敬的'.Auth::user()->name.',欢迎回来')->success();
                 return redirect()->intended(route("users.show", [Auth::user()]));
             } else {
