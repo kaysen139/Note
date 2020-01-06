@@ -46,4 +46,15 @@ class DraftsController extends ApiController
         return $this->message('保存成功');
     }
 
+    // 获取7牛token
+    public function getToken()
+    {
+        $accessKey = config('services.qiniu.accessKey');
+        $secretKey = config('services.qiniu.secretKey');
+        $auth = new \Qiniu\Auth($accessKey, $secretKey);
+        $bucket = 'image';
+        $token = $auth->uploadToken($bucket);
+        return $this->success(compact('token'));
+    }
+
 }

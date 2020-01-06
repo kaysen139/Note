@@ -48,5 +48,9 @@ return [
         'appid' => env('BAIDU_TRANSLATE_APPID'),
         'key'   => env('BAIDU_TRANSLATE_KEY'),
     ],
+    'qiniu' => [
+        'accessKey' => env('qiniu_access_key'),
+        'secretKey' => env('qiniu_secret_key'),
+    ]
 
 ];

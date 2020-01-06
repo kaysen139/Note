@@ -64,6 +64,7 @@
 <script>
     import {default as SimpleMDE} from 'simplemde/dist/simplemde.min.js'
     import MdeOption from './modules/MdeConfig.js'
+    import * as qiniu from 'qiniu-js'
 
     export default {
         props: [
@@ -76,7 +77,8 @@
             return {
                 simplemde: '',
                 title: '',
-                shouldEmit:false
+                shouldEmit:false,
+                token: '', // 七牛token
             }
         },
         mounted() {
@@ -105,12 +107,33 @@
                 });
             }.bind(this));
 
+            // 粘贴图片的触发函数
+            this.simplemde.codemirror.on('paste', (editor, e) => {
+                if (!(e.clipboardData && e.clipboardData.items)) {
+                    // 弹窗说明，此浏览器不支持此操作
+                    return
+                }
+                try {
+                    let dataList = e.clipboardData.items;
+                    if (dataList[0].kind === 'file' && dataList[0].getAsFile().type.indexOf('image') !== -1) {
+                        this.uploadImage(dataList[0].getAsFile())
+                    }
+                } catch (e) {
+                    console.log(e);
+                    // 弹窗说明，只能粘贴图片
+                }
+            })
         },
 
         created() {
-
-            console.log('created');
-            window.onresize = this.adjustPreviewWidth
+            window.onresize = this.adjustPreviewWidth;
+            axios.get('/api/v1/drafts/getToken').then(({data})=>{
+                if (data.code == 200) {
+                    this.token = data.data.token;
+                } else {
+                    alert('getToken error');
+                }
+            })
         },
         watch: {
             titleText: function (value) {
@@ -191,23 +214,46 @@
                 fileBtn.onchange = this.uploadImage;
                 fileBtn.click();
             },
-            uploadImage() {
-                var fileBtn = document.getElementById("btn_file");
+            uploadImage(file) {
+                if (!(file instanceof File)) {
+                    var fileBtn = document.getElementById("btn_file");
+                    file = fileBtn.files[0];
+                }
                 var formData = new FormData();
-                formData.append("file", fileBtn.files[0]);
-                axios.post('/api/v1/image/upload', formData).then(({data}) => {
-
-                    var pos = this.simplemde.codemirror.getCursor();
-                    this.simplemde.codemirror.setSelection(pos, pos);
-                    this.simplemde.codemirror.replaceSelection('![](' + data.data.image + ')');
-
-                    console.log(data);
-
-                });
-                console.log(fileBtn.files[0]);
-                console.log(1);
+                formData.append("file", file);
+                var domain = 'http://image.hbxzlgs.com/';
+                var key = (new Date()).getTime() + file['name'];
+                var putExtra = {
+                    fname: '',
+                    params: {'x:name': key},
+                    mimeType: null,
+                };
+                var config = {
+                    useCdnDomain: true,
+                    disableStatisticsReport: false,
+                    retryCount: 6,
+                    region: qiniu.region.z0,
+                };
+                var next = function(response) {
+                    console.log(response);
+                };
+                var error = function(error) {
+                    console.log(error);
+                };
+                var that = this;
+                var complete = function(res) {
+                    var pos = that.simplemde.codemirror.getCursor();
+                    that.simplemde.codemirror.setSelection(pos, pos);
+                    that.simplemde.codemirror.replaceSelection('![](' + domain + res.key + ')');
+                };
+                var subObject = {
+                    next: next,
+                    error: error,
+                    complete: complete
+                };
+                var observable = qiniu.upload(file, key, this.token, putExtra, config);
+                observable.subscribe(subObject)
             }
-
         }
     }
 

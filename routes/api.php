@@ -49,6 +49,7 @@ Route::group(['prefix'=>'v1','namespace' => 'Api'],function (){
 
     Route::get('tags','TagsController@index');
 
+    Route::get('drafts/getToken','DraftsController@getToken');
     Route::get('drafts/{draft}','DraftsController@show');
     Route::put('drafts/{draft}','DraftsController@update');
 
