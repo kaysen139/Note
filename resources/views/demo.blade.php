@@ -11,7 +11,7 @@
     <title>{{ config('app.name', 'Laravel') }}</title>
 
     <!-- Styles -->
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <link href="{{ myMix('css/app.css') }}" rel="stylesheet">
 </head>
 <body>
 
@@ -718,6 +718,6 @@
 {{--<script type="text/javascript" src="js/plugins.min.js"></script>--}}
 
 <!-- Scripts -->
-<script src="{{ mix('js/app.js') }}"></script>
+<script src="{{ myMix('js/app.js') }}"></script>
 </body>
 </html>

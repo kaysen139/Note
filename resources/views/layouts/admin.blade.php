@@ -13,7 +13,7 @@
     <!-- Icon -->
     {{--<link rel="shortcut icon" href="{{ config('blog.default_icon') }}">--}}
 
-    <link rel="stylesheet" href="{{ mix('css/home.css') }}">
+    <link rel="stylesheet" href="{{ myMix('css/home.css') }}">
 
     <style>
         [v-cloak] { display: none; }
@@ -52,7 +52,7 @@
 
 
 <!-- Scripts -->
-<script src="{{ mix('js/home.js') }}"></script>
+<script src="{{ myMix('js/home.js') }}"></script>
 <script>
 
     var attr = $('.message.b-message').attr('title');

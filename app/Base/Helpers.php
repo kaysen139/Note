@@ -49,3 +49,17 @@ if (! function_exists('notification_parser')) {
         return $handler->make($data);
     }
 }
+
+if (! function_exists('myMix')) {
+
+    function myMix($path)
+    {
+        $domain = "";
+        if(env("qiniu_domain"))
+        {
+            $domain = env("qiniu_domain") . '/public';
+        }
+        return $domain . mix($path);
+    }
+}
+

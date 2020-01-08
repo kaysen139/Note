@@ -14,7 +14,7 @@
     <meta name="csrf-token" content="{{ csrf_token() }}">
 
     <!-- Styles -->
-    <link href="{{ mix('css/app.css') }}" rel="stylesheet">
+    <link href="{{ myMix('css/app.css') }}" rel="stylesheet">
 
     <script>
         window.App = @json([
@@ -56,9 +56,9 @@
     </div>
 
     <!-- Scripts -->
-    <script src="{{ mix('js/manifest.js') }}"></script>
-    <script src="{{ mix('js/vendor.js') }}"></script>
-    <script src="{{ mix('js/app.js') }}"></script>
+    <script src="{{ myMix('js/manifest.js') }}"></script>
+    <script src="{{ myMix('js/vendor.js') }}"></script>
+    <script src="{{ myMix('js/app.js') }}"></script>
     <script>
 
     </script>
